@@ -1,0 +1,36 @@
+{
+  "events": [
+    {
+      "tStartMs": 0,
+      "dDurationMs": 0,
+      "wWinId": 1,
+      "segs": [{ "utf8": "Hello" }]
+    },
+    {
+      "tStartMs": 400,
+      "dDurationMs": 600,
+      "wWinId": 1,
+      "aAppend": 1,
+      "segs": [{ "utf8": " world" }]
+    },
+    {
+      "tStartMs": 1000,
+      "dDurationMs": 5000,
+      "segs": [{ "utf8": "Second cue" }]
+    },
+    {
+      "tStartMs": 2000,
+      "segs": [{ "utf8": "Third cue" }]
+    },
+    {
+      "tStartMs": 2000,
+      "dDurationMs": 100,
+      "segs": [{ "utf8": "Third cue" }]
+    },
+    {
+      "tStartMs": -10,
+      "dDurationMs": 1000,
+      "segs": [{ "utf8": "Invalid" }]
+    }
+  ]
+}

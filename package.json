@@ -1,0 +1,11 @@
+{
+  "name": "myaitranslate-maintenance",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "patch:p0": "node maintenance/patches/apply-p0-backports.mjs",
+    "test": "node --test maintenance/tests/p0.test.mjs",
+    "check:bundles": "node --check content_main.js && node --check options.js && node --check popup.js && node --check side-panel.js",
+    "verify:p0": "npm run patch:p0 && npm run check:bundles && npm test"
+  }
+}
