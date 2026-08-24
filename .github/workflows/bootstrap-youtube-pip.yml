@@ -1,0 +1,41 @@
+name: Bootstrap YouTube bilingual PiP
+
+on:
+  push:
+    branches:
+      - feature/youtube-pip
+    paths:
+      - .github/workflows/bootstrap-youtube-pip.yml
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/youtube-pip
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Register and verify the YouTube iteration
+        run: |
+          node maintenance/patches/apply-youtube-pip.mjs
+          npm run verify:p0
+          node --check youtube-pip.js
+          node --test maintenance/tests/youtube-pip.test.mjs
+      - name: Commit generated manifest and remove bootstrap helpers
+        shell: bash
+        run: |
+          rm -f .github/workflows/bootstrap-youtube-pip.yml
+          find .github/workflows -maxdepth 1 -type f -iname '*export*youtube*' -delete
+          rm -f docs/YOUTUBE-PIP-TECHNICAL.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "feat: add YouTube bilingual Picture-in-Picture"
+          git push origin HEAD:feature/youtube-pip
