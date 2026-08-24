@@ -1,6 +1,6 @@
 # Immersive Translate Maintained Build
 
-Private long-term maintenance baseline for a patched Immersive Translate 1.29.1 Chrome extension build.
+Long-term maintenance baseline for a patched Immersive Translate 1.29.1 Chrome extension build.
 
 ## Maintenance policy
 
@@ -22,3 +22,4 @@ See:
 - [`docs/BASELINE.md`](docs/BASELINE.md)
 - [`docs/UPSTREAM.md`](docs/UPSTREAM.md)
 - [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- [`docs/P0-BACKPORTS.md`](docs/P0-BACKPORTS.md)
