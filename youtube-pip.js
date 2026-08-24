@@ -426,7 +426,7 @@
       button.setAttribute('aria-pressed', 'false');
       button.style.width = '48px';
       button.style.padding = '0 8px';
-      button.innerHTML = buildButtonIcon(false);
+      button.appendChild(createButtonIcon(false));
       button.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -439,13 +439,39 @@
       updateButtonState(button);
     }
 
-    function buildButtonIcon(active) {
+    function createButtonIcon(active) {
+      const namespace = 'http://www.w3.org/2000/svg';
       const accent = active ? '#ff6b9a' : '#ffffff';
-      return `<svg viewBox="0 0 36 36" width="100%" height="100%" aria-hidden="true" focusable="false">
-        <rect x="4" y="7" width="28" height="21" rx="2.5" fill="none" stroke="${accent}" stroke-width="2"/>
-        <rect x="19" y="17" width="11" height="8" rx="1.5" fill="${accent}"/>
-        <path d="M8.5 13.5h8M8.5 18h7" stroke="${accent}" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>`;
+      const svg = document.createElementNS(namespace, 'svg');
+      for (const [name, value] of Object.entries({
+        viewBox: '0 0 36 36',
+        width: '100%',
+        height: '100%',
+        'aria-hidden': 'true',
+        focusable: 'false',
+      })) {
+        svg.setAttribute(name, value);
+      }
+
+      const frame = document.createElementNS(namespace, 'rect');
+      for (const [name, value] of Object.entries({
+        x: '4', y: '7', width: '28', height: '21', rx: '2.5',
+        fill: 'none', stroke: accent, 'stroke-width': '2',
+      })) frame.setAttribute(name, value);
+
+      const inset = document.createElementNS(namespace, 'rect');
+      for (const [name, value] of Object.entries({
+        x: '19', y: '17', width: '11', height: '8', rx: '1.5', fill: accent,
+      })) inset.setAttribute(name, value);
+
+      const lines = document.createElementNS(namespace, 'path');
+      for (const [name, value] of Object.entries({
+        d: 'M8.5 13.5h8M8.5 18h7', stroke: accent,
+        'stroke-width': '1.8', 'stroke-linecap': 'round',
+      })) lines.setAttribute(name, value);
+
+      svg.append(frame, inset, lines);
+      return svg;
     }
 
     function updateButtonState(button = document.getElementById(BUTTON_ID)) {
@@ -456,7 +482,7 @@
       button.dataset.pipActive = marker;
       button.setAttribute('aria-pressed', marker);
       button.title = active ? messages.close : messages.title;
-      button.innerHTML = buildButtonIcon(active);
+      button.replaceChildren(createButtonIcon(active));
     }
 
     function isYoutubePlaybackPage() {
