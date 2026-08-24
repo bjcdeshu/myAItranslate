@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - feature/youtube-pip
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
 
 jobs:
   export:
+    if: github.event_name == 'push' || github.head_ref == 'feature/youtube-pip'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
