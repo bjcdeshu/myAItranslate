@@ -1,0 +1,21 @@
+name: maintenance-regression
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run verify:p0
+      - name: Ensure generated bundle patches are committed
+        run: git diff --exit-code -- content_main.js options.js popup.js side-panel.js

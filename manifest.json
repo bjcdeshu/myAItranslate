@@ -4,7 +4,7 @@
   "manifest_version": 3,
   "name": "__MSG_brandName__",
   "description": "__MSG_brandDescription__",
-  "version": "1.29.1",
+  "version": "1.29.1.1",
   "default_locale": "en",
   "background": {
     "service_worker": "background.js"
@@ -168,5 +168,6 @@
     "64": "icons/64.png",
     "128": "icons/128.png",
     "256": "icons/256.png"
-  }
+  },
+  "version_name": "1.29.1-maint.1"
 }
