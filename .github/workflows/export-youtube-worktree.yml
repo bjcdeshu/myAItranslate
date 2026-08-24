@@ -1,9 +1,6 @@
 name: Export YouTube worktree
 
 on:
-  push:
-    branches:
-      - feature/youtube-pip
   pull_request:
     branches:
       - main
@@ -13,11 +10,12 @@ permissions:
 
 jobs:
   export:
-    if: github.event_name == 'push' || github.head_ref == 'feature/youtube-pip'
+    if: github.head_ref == 'feature/youtube-pip'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: Pack repository worktree
         shell: bash
