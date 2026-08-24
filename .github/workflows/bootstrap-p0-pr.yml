@@ -3,18 +3,22 @@ name: Bootstrap P0 backports from PR
 on:
   pull_request:
     branches: [main]
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: write
 
 jobs:
   bootstrap:
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feature/p0-backports'
+    if: >-
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feature/p0-backports') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && github.event.issue.number == 1 && github.event.comment.body == '/bootstrap-p0')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: feature/p0-backports
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -41,4 +45,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "feat: backport three P0 reliability fixes"
-          git push origin HEAD:${GITHUB_HEAD_REF}
+          git push origin HEAD:feature/p0-backports
