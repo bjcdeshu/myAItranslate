@@ -1,13 +1,12 @@
 {
-"update_url": "https://clients2.google.com/service/update2/crx",
-
+  "update_url": "https://clients2.google.com/service/update2/crx",
   "manifest_version": 3,
   "name": "__MSG_brandName__",
   "description": "__MSG_brandDescription__",
   "version": "1.29.1",
   "default_locale": "en",
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "maintenance/runtime/background-wrapper.js"
   },
   "web_accessible_resources": [
     {
@@ -43,6 +42,7 @@
         "*://*/*"
       ],
       "js": [
+        "maintenance/runtime/content-prelude.js",
         "content_guard.js"
       ],
       "run_at": "document_start",
