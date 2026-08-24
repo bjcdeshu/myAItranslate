@@ -1,0 +1,77 @@
+name: P0 backports
+
+on:
+  push:
+    branches:
+      - feature/p0-backports
+    paths:
+      - "maintenance/**"
+      - ".github/workflows/p0-backports.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: p0-backports-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-and-activate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out maintenance branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/p0-backports
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run P0 regression tests
+        run: node --test maintenance/tests/*.test.mjs
+
+      - name: Activate runtime shims in manifest
+        run: node maintenance/apply-manifest.mjs
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check maintenance/runtime/provider-fetch-shim.js
+          node --check maintenance/runtime/content-prelude.js
+          node --check maintenance/runtime/background-wrapper.js
+          node --check background.js
+          node --check content_main.js
+
+      - name: Validate manifest activation
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+          if (manifest.background?.service_worker !== 'maintenance/runtime/background-wrapper.js') {
+            throw new Error('background wrapper was not activated');
+          }
+          const entry = manifest.content_scripts?.find((item) => item.js?.includes('content_guard.js'));
+          if (!entry || entry.js[0] !== 'maintenance/runtime/content-prelude.js') {
+            throw new Error('content prelude was not activated before content_guard.js');
+          }
+          NODE
+
+      - name: Re-run tests after activation
+        run: node --test maintenance/tests/*.test.mjs
+
+      - name: Check generated diff
+        run: git diff --check
+
+      - name: Commit generated manifest activation
+        run: |
+          if git diff --quiet -- manifest.json; then
+            echo "manifest.json is already activated"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "feat(p0): activate provider and subtitle reliability backports"
+          git push origin HEAD:feature/p0-backports
