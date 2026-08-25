@@ -1,39 +1,57 @@
 # myAItranslate
 
-Long-term maintenance fork of a patched Immersive Translate `1.29.1` Chrome extension build.
+面向个人使用的 Chrome 翻译扩展维护版，重点解决自定义 AI 服务兼容性、视频字幕稳定性和 YouTube 双语画中画。
 
-## Maintenance policy
+## 当前版本
 
-- `main` preserves the existing custom translation-provider behavior as the primary baseline.
-- New official builds are reference upstreams, not drop-in replacements.
-- Fixes are backported selectively and recorded as deterministic patches against the compiled bundles.
-- Provider compatibility and subtitle reliability take priority over feature parity.
+`1.29.1-maint.2`
 
-## Current maintenance release
+## 主要功能
 
-`1.29.1-maint.1` contains the first three P0 backports:
+- 自动补全 OpenAI 兼容服务和 Anthropic 兼容服务的 Base URL 请求路径，同时保留显式填写的完整接口地址。
+- 视频字幕使用独立的请求分批限制，不影响普通网页翻译。
+- 修复 YouTube 异常字幕时间轴、重复字幕、超长字幕和翻译字幕错位。
+- 支持 YouTube 双语画中画，字幕跟随页面当前的原文、译文或双语模式。
+- 画中画窗口支持播放、暂停、前后跳转 10 秒、静音和关闭。
 
-1. OpenAI-compatible and Anthropic-compatible Base URL endpoint completion.
-2. Subtitle-specific request batching for all `subtitle_*` scenes, with safe numeric limits.
-3. YouTube JSON3 timeline repair and timestamp-based translated-caption alignment.
+## 安装
 
-The implementation is reproducible:
+Chrome 需要加载解压后的扩展目录，不能直接加载 ZIP。
+
+1. 下载发布包并解压到一个不会随意移动的固定目录，例如 `C:\Apps\myAItranslate-1.29.1-maint.2`。
+2. 打开 `chrome://extensions`。
+3. 开启右上角的“开发者模式”。
+4. 点击“加载已解压的扩展程序”。
+5. 选择包含 `manifest.json` 的目录。
+
+## 更新
+
+将新版本解压到固定目录后，在 `chrome://extensions` 中点击该扩展的“重新加载”，再刷新已经打开的网页。
+
+如果直接使用本仓库，也可以更新仓库文件后执行相同的“重新加载 + 刷新网页”操作。
+
+## YouTube 双语画中画
+
+双语画中画需要 Chrome 116 或更高版本。该功能没有单独的设置开关；扩展生效后，按钮会直接出现在 YouTube 播放器右下角控制区。
+
+1. 打开 YouTube 视频页面。
+2. 开启视频字幕和字幕翻译。
+3. 点击播放器右下角的双语画中画按钮。
+4. 再次点击按钮，或关闭画中画窗口，即可退出。
+
+如果按钮没有出现，先在扩展管理页重新加载扩展，再刷新 YouTube 页面。
+
+## ZIP 交付方式
+
+ZIP 只用于下载、搬运和备份。实际安装时仍需先解压，再让 Chrome 加载解压目录。发布 ZIP 不提交到 `main`，避免把二进制交付物混入源码历史。
+
+## 维护校验
 
 ```bash
 npm run verify:p0
+node maintenance/patches/apply-youtube-pip.mjs --check
+node --check youtube-pip.js
+node --test maintenance/tests/youtube-pip.test.mjs
 ```
 
-The patcher is idempotent and fails when its known bundle anchors no longer match. See [`docs/P0-BACKPORTS.md`](docs/P0-BACKPORTS.md) and [`maintenance/README.md`](maintenance/README.md).
-
-## Baseline
-
-- Initial baseline commit: `6c0b9cc47fc6a98b21a9c14c64fe54934079e2f6`
-- Baseline tag: `baseline-1.29.1-patched`
-- Baseline contents: 87 files from the supplied packaged Chrome extension.
-- This repository starts from compiled production artifacts rather than the original source tree.
-
-Further documentation:
-
-- [`docs/BASELINE.md`](docs/BASELINE.md)
-- [`docs/UPSTREAM.md`](docs/UPSTREAM.md)
-- [`docs/ROADMAP.md`](docs/ROADMAP.md)
+功能说明见 [`docs/P0-BACKPORTS.md`](docs/P0-BACKPORTS.md) 和 [`docs/YOUTUBE-PIP.md`](docs/YOUTUBE-PIP.md)。

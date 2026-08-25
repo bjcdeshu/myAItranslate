@@ -181,13 +181,13 @@ test("generated bundles contain exactly the expected P0 markers", async () => {
   }
 });
 
-test("maintenance manifest identifies the patched release without runtime wrappers", async () => {
+test("maintenance manifest identifies the current release without runtime wrappers", async () => {
   const manifest = JSON.parse(
     await readFile(new URL("../../manifest.json", import.meta.url), "utf8"),
   );
 
-  assert.equal(manifest.version, "1.29.1.1");
-  assert.equal(manifest.version_name, "1.29.1-maint.1");
+  assert.equal(manifest.version, "1.29.1.2");
+  assert.equal(manifest.version_name, "1.29.1-maint.2");
   assert.equal(manifest.background.service_worker, "background.js");
   assert.ok(
     manifest.content_scripts.every((entry) =>
