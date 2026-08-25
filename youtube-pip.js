@@ -16,7 +16,6 @@
   const CLEAR_DELAY_MS = 120;
   const DIRECT_EVENT_FRESH_MS = 1_200;
   const PLAYER_VIEW_MODE_BUTTONS = [
-    '.ytp-pip-button',
     '.ytp-miniplayer-button',
     '.ytp-size-button',
     '.ytp-fullscreen-button',
@@ -441,15 +440,23 @@
     }
 
     function placeButtonWithViewModes(controls, button) {
-      const firstViewModeButton = controls.querySelector(PLAYER_VIEW_MODE_BUTTONS);
+      const viewModeGroup = [...controls.children].find((child) =>
+        child.classList.contains('ytp-right-controls-right'),
+      ) || controls;
+      const firstViewModeButton = [...viewModeGroup.children].find((child) =>
+        child.matches(PLAYER_VIEW_MODE_BUTTONS),
+      );
       if (firstViewModeButton) {
-        if (button.parentElement !== controls || button.nextElementSibling !== firstViewModeButton) {
-          controls.insertBefore(button, firstViewModeButton);
+        if (
+          button.parentElement !== viewModeGroup ||
+          button.nextElementSibling !== firstViewModeButton
+        ) {
+          viewModeGroup.insertBefore(button, firstViewModeButton);
         }
         return;
       }
 
-      if (button.parentElement !== controls) controls.appendChild(button);
+      if (button.parentElement !== viewModeGroup) viewModeGroup.appendChild(button);
     }
 
     function createButtonIcon(active) {
