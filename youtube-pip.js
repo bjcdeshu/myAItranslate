@@ -15,11 +15,6 @@
   const PUBLIC_STATE_EVENT = 'myAItranslate:pip-subtitle-state';
   const CLEAR_DELAY_MS = 120;
   const DIRECT_EVENT_FRESH_MS = 1_200;
-  const PLAYER_VIEW_MODE_BUTTONS = [
-    '.ytp-miniplayer-button',
-    '.ytp-size-button',
-    '.ytp-fullscreen-button',
-  ].join(',');
 
   const SOURCE_SELECTORS = [
     'source-cue',
@@ -435,28 +430,32 @@
         });
       }
 
-      placeButtonWithViewModes(controls, button);
+      placeButtonBesideTranslateControl(controls, button);
       updateButtonState(button);
     }
 
-    function placeButtonWithViewModes(controls, button) {
-      const viewModeGroup = [...controls.children].find((child) =>
-        child.classList.contains('ytp-right-controls-right'),
-      ) || controls;
-      const firstViewModeButton = [...viewModeGroup.children].find((child) =>
-        child.matches(PLAYER_VIEW_MODE_BUTTONS),
+    function placeButtonBesideTranslateControl(controls, button) {
+      const translateControl = [...controls.children].find((child) =>
+        child.classList.contains('immersive-translate-quick-button-container'),
       );
-      if (firstViewModeButton) {
-        if (
-          button.parentElement !== viewModeGroup ||
-          button.nextElementSibling !== firstViewModeButton
-        ) {
-          viewModeGroup.insertBefore(button, firstViewModeButton);
+      if (translateControl) {
+        if (button.parentElement !== controls || button.previousElementSibling !== translateControl) {
+          controls.insertBefore(button, translateControl.nextElementSibling);
         }
         return;
       }
 
-      if (button.parentElement !== viewModeGroup) viewModeGroup.appendChild(button);
+      const nativeControls = [...controls.children].find((child) =>
+        child.classList.contains('ytp-right-controls-left'),
+      );
+      if (nativeControls) {
+        if (button.parentElement !== controls || button.nextElementSibling !== nativeControls) {
+          controls.insertBefore(button, nativeControls);
+        }
+        return;
+      }
+
+      if (button.parentElement !== controls) controls.appendChild(button);
     }
 
     function createButtonIcon(active) {
