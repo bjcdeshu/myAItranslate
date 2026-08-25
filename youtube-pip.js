@@ -15,6 +15,12 @@
   const PUBLIC_STATE_EVENT = 'myAItranslate:pip-subtitle-state';
   const CLEAR_DELAY_MS = 120;
   const DIRECT_EVENT_FRESH_MS = 1_200;
+  const PLAYER_VIEW_MODE_BUTTONS = [
+    '.ytp-pip-button',
+    '.ytp-miniplayer-button',
+    '.ytp-size-button',
+    '.ytp-fullscreen-button',
+  ].join(',');
 
   const SOURCE_SELECTORS = [
     'source-cue',
@@ -408,35 +414,42 @@
 
     function ensureButton() {
       if (!isYoutubePlaybackPage()) return;
-      const existing = document.getElementById(BUTTON_ID);
-      if (existing) {
-        updateButtonState(existing);
-        return;
-      }
-
       const controls = document.querySelector('.ytp-right-controls');
       if (!controls) return;
 
-      const button = document.createElement('button');
-      button.id = BUTTON_ID;
-      button.className = 'ytp-button';
-      button.type = 'button';
-      button.title = messages.title;
-      button.setAttribute('aria-label', messages.title);
-      button.setAttribute('aria-pressed', 'false');
-      button.style.width = '48px';
-      button.style.padding = '0 8px';
-      button.appendChild(createButtonIcon(false));
-      button.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        togglePip();
-      });
+      let button = document.getElementById(BUTTON_ID);
+      if (!button) {
+        button = document.createElement('button');
+        button.id = BUTTON_ID;
+        button.className = 'ytp-button';
+        button.type = 'button';
+        button.title = messages.title;
+        button.setAttribute('aria-label', messages.title);
+        button.setAttribute('aria-pressed', 'false');
+        button.style.width = '48px';
+        button.style.padding = '0 8px';
+        button.appendChild(createButtonIcon(false));
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          togglePip();
+        });
+      }
 
-      const nativePip = controls.querySelector('.ytp-pip-button');
-      const fullscreen = controls.querySelector('.ytp-fullscreen-button');
-      controls.insertBefore(button, nativePip || fullscreen || null);
+      placeButtonWithViewModes(controls, button);
       updateButtonState(button);
+    }
+
+    function placeButtonWithViewModes(controls, button) {
+      const firstViewModeButton = controls.querySelector(PLAYER_VIEW_MODE_BUTTONS);
+      if (firstViewModeButton) {
+        if (button.parentElement !== controls || button.nextElementSibling !== firstViewModeButton) {
+          controls.insertBefore(button, firstViewModeButton);
+        }
+        return;
+      }
+
+      if (button.parentElement !== controls) controls.appendChild(button);
     }
 
     function createButtonIcon(active) {
