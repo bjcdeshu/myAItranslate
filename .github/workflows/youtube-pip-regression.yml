@@ -1,0 +1,49 @@
+name: youtube-pip-regression
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - youtube-pip.js
+      - manifest.json
+      - maintenance/patches/apply-youtube-pip.mjs
+      - maintenance/tests/youtube-pip.test.mjs
+      - docs/YOUTUBE-PIP.md
+      - .github/workflows/youtube-pip-regression.yml
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify maintained bundle backports
+        run: npm run verify:p0
+      - name: Verify YouTube bilingual PiP
+        run: |
+          node maintenance/patches/apply-youtube-pip.mjs --check
+          node --check youtube-pip.js
+          node --test maintenance/tests/youtube-pip.test.mjs
+      - name: Package unpacked extension
+        shell: bash
+        run: |
+          mkdir -p /tmp/myAItranslate-package
+          git archive --format=tar HEAD | tar -x -C /tmp/myAItranslate-package
+          rm -rf /tmp/myAItranslate-package/.github /tmp/myAItranslate-package/maintenance /tmp/myAItranslate-package/docs
+          cd /tmp/myAItranslate-package
+          zip -qr /tmp/myAItranslate-1.29.1-maint.2.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: myAItranslate-1.29.1-maint.2
+          path: /tmp/myAItranslate-1.29.1-maint.2.zip
+          if-no-files-found: error
+          retention-days: 14
