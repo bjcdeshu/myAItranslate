@@ -477,6 +477,14 @@
       })) {
         svg.setAttribute(name, value);
       }
+      Object.assign(svg.style, {
+        width: '32px',
+        height: '32px',
+        padding: '0',
+        display: 'block',
+        flex: '0 0 32px',
+        boxSizing: 'border-box',
+      });
 
       const frame = document.createElementNS(namespace, 'rect');
       for (const [name, value] of Object.entries({
