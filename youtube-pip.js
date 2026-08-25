@@ -463,33 +463,29 @@
       const accent = active ? '#ff6b9a' : '#ffffff';
       const svg = document.createElementNS(namespace, 'svg');
       for (const [name, value] of Object.entries({
-        viewBox: '0 0 36 36',
+        viewBox: '0 0 24 24',
         width: '100%',
         height: '100%',
+        fill: 'none',
+        stroke: accent,
+        'stroke-width': '2',
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
         'aria-hidden': 'true',
         focusable: 'false',
       })) {
         svg.setAttribute(name, value);
       }
 
-      const frame = document.createElementNS(namespace, 'rect');
-      for (const [name, value] of Object.entries({
-        x: '4', y: '7', width: '28', height: '21', rx: '2.5',
-        fill: 'none', stroke: accent, 'stroke-width': '2',
-      })) frame.setAttribute(name, value);
+      const frame = document.createElementNS(namespace, 'path');
+      frame.setAttribute('d', 'M21 9V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4');
 
-      const inset = document.createElementNS(namespace, 'rect');
+      const floatingWindow = document.createElementNS(namespace, 'rect');
       for (const [name, value] of Object.entries({
-        x: '19', y: '17', width: '11', height: '8', rx: '1.5', fill: accent,
-      })) inset.setAttribute(name, value);
+        x: '12', y: '13', width: '10', height: '7', rx: '2',
+      })) floatingWindow.setAttribute(name, value);
 
-      const lines = document.createElementNS(namespace, 'path');
-      for (const [name, value] of Object.entries({
-        d: 'M8.5 13.5h8M8.5 18h7', stroke: accent,
-        'stroke-width': '1.8', 'stroke-linecap': 'round',
-      })) lines.setAttribute(name, value);
-
-      svg.append(frame, inset, lines);
+      svg.append(frame, floatingWindow);
       return svg;
     }
 
